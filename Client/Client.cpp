@@ -1,5 +1,6 @@
 #include <net_bridge/server/net_server.h>
 #pragma comment(lib, "NetBridge")
+
 #define SERVER_PORT 2048
 
 namespace net {
@@ -32,12 +33,13 @@ int main( )
     WORD ver = MAKEWORD( 2, 2 );
     int wsResult = WSAStartup( ver, &data );
     // Create a new instance of the client and start listening for incoming data
-    auto game_client = new net::client( "127.0.0.1", SERVER_PORT );
+    std::unique_ptr<net::client> game_client = std::make_unique<net::client>( "127.0.0.1", SERVER_PORT );
+   
     game_client->start_listeners( );
 
     // Attempt to connect to the server
     if ( game_client->connect( ) )
-        printf( "Connected to server \n" );
+        Log( "Connected to server" );
    
     // Wait for users input  
     system( "pause" );

@@ -1,5 +1,6 @@
 #include <net_bridge/server/net_server.h>
 #pragma comment(lib, "NetBridge")
+
 #define SERVER_PORT 2048
 
 namespace net {
@@ -41,14 +42,14 @@ int main( )
     int wsResult = WSAStartup( ver, &data );
 
     // Create a new instance of the server
-    spdlog::info( "Starting Server [{}]", SERVER_PORT );
-    auto main_server = new net::net_server( SERVER_PORT );
+    Log( "Starting Server [{}]", SERVER_PORT );
+    std::unique_ptr<net::net_server> main_server = std::make_unique<net::net_server>( SERVER_PORT );
 
     // Check if the server started successfully
-    if ( main_server->begin_listening( ) ) {
-        spdlog::info( "Started server." );
-    }
-    else spdlog::error( "Failed to start server." );
+    if ( main_server->begin_listening( ) )
+        Log( "Started server." );
+    else 
+        Log( "Failed to start server." );
 
     // Run an infinite loop to keep the program running
     while ( 1 ) {

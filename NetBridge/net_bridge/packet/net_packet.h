@@ -52,22 +52,16 @@ namespace net_bridge
     public:
         inline c_packet( ) {}
 
-        //    inline c_packet(const data::c_packet& obj){}
-
         c_packet_info info;
-
         c_header header;
         c_body body;
 
         c_array write( ) {
             c_array arr;
-
             arr.write<uint16_t>( header.magic_id );
             arr.write<uint64_t>( header.body_length );
-
             arr.write( ( uint8_t )body.opcode );
             arr.write( body.message.get_buffer( ), body.message.get_buffer_length( ) );
-
             return arr;
         }
 
@@ -79,7 +73,7 @@ namespace net_bridge
     class c_packet_container {
     public:
         inline c_packet_container( ) {}
-
+        
         void on_data_received( std::uint64_t sock, c_array arr );
         std::map<std::uint64_t, std::deque<c_packet>*> get_packets( ) { return received_packets; }
 
@@ -88,7 +82,6 @@ namespace net_bridge
         }
     private:
         std::map<std::uint64_t, std::deque<c_packet>*> received_packets;
-
         std::map<std::uint64_t, c_array> received_data;
     };
 };

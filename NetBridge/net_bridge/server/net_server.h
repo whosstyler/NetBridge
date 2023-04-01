@@ -15,7 +15,7 @@ namespace net_bridge
      
         inline c_tcp_server( uint16_t p )
         {
-            server_socket = new c_socket( p );
+            server_socket = std::make_unique<c_socket>(p);
         }
 
 		bool begin_listening( bool start_thread = true );
@@ -42,7 +42,7 @@ namespace net_bridge
         void send_handler( );
         void client_handler( );
     private:
-        c_socket* server_socket = nullptr;
+        std::unique_ptr<c_socket> server_socket = nullptr;
 
         net_bridge::c_client_container container;
         net_bridge::c_packet_container packet_container;

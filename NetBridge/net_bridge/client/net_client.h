@@ -10,7 +10,7 @@ namespace net_bridge
 	public:
         inline c_client( std::string ip, uint16_t p )
         {
-            client_socket = new c_socket( ip, p );
+            client_socket = std::make_shared<c_socket>( ip, p );
         }
 
         bool connect( bool start_thread = true );
@@ -18,23 +18,19 @@ namespace net_bridge
         bool running( ) { return is_running; }
         void stop( ) { is_running = false; }
 
-        c_socket* get_socket( ) { return client_socket; }
+        std::shared_ptr<c_socket> get_socket( ) { return client_socket; }
 
         void start_listeners( );
-
     public:
         virtual void on_handle_packet( c_socket& client_socket, c_packet& message ) = 0;
-
         virtual void on_disconnect( ) = 0;
-
     private:
         void packet_handler( );
         void send_handler( );
         void client_handler( );
-
     private:
         c_packet_container container;
-        c_socket* client_socket = nullptr;
+        std::shared_ptr<c_socket> client_socket = nullptr;
         std::deque<c_array> packets_to_send;
 
         bool is_running = true;
@@ -51,46 +47,33 @@ namespace net_bridge
     public:
         inline c_client_container( ) {}
 
-
         void on_connected( c_socket sock ) {
-            auto sock_id = sock.get_socket( );
-#if DEBUG_LOGS
-            printf( "c_client_container::on_connected | New client connected! [%d] adding to container.\n", sock_id );
-#endif
-
+            auto sock_id = sock.get_socket( );      
+            Log( "%s | New client connected! [%d] adding to container.", __FUNCTION__, sock_id );         
             clients[ sock_id ] = sock;
         }
 
         void on_disconnected( c_socket sock ) {
-            auto sock_id = sock.get_socket( );
-#if DEBUG_LOGS
-            printf( "c_client_container::on_connected | Client disconnected [%d] removing from container.\n", sock_id );
-#endif
+            auto sock_id = sock.get_socket( );          
+            Log( "%s | Client disconnected [%d] removing from container.", __FUNCTION__, sock_id );         
             if ( clients.find( sock_id ) != clients.end( ) )
                 clients.erase( sock_id );
         }
         void on_disconnected( std::uint64_t sock_id ) {
-#if DEBUG_LOGS
-            printf( "c_client_container::on_connected | Client disconnected [%d] removing from container.\n", sock_id );
-#endif
+            Log( "%s | Client disconnected [%d] removing from container.", __FUNCTION__, sock_id );
+           
             if ( clients.find( sock_id ) != clients.end( ) ) {
                 auto m_sock = clients[ sock_id ];
-
                 m_sock.close_socket( );
                 clients.erase( sock_id );
-            }
+                }
             }
 
         c_socket get_client( std::uint64_t m_socket ) {
             if ( clients.find( m_socket ) == clients.end( ) ) {
-#if DEBUG_LOGS
-                printf( "c_client_container::get_client | Failed to remove client from container [%d]. (Client doesnt exist.) \n", m_socket );
-
-#endif
-
+                Log( "%s | Failed to remove client from container [%d]. (Client doesnt exist.)", __FUNCTION__, m_socket );
                 return c_socket( 0 );
             }
-
             return clients[ m_socket ];
         }
 

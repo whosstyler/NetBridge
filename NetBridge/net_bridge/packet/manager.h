@@ -247,7 +247,7 @@ namespace net_bridge
 
 		BYTE* get_bytes( ) { return ( BYTE* )buffer.data( ); };
 
-		uint64_t bytes_left( ) { return get_buffer_length( ) - get_read_offset( ); };
+		uint64_t bytes_remaining( ) { return get_buffer_length( ) - get_read_offset( ); };
 
 	private:
 		std::vector<int8_t> buffer;
