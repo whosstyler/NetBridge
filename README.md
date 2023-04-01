@@ -5,6 +5,9 @@ NetBridge is built C++ and is synchronous. Has only been tested on Windows.
 
 NetBridge is distributed under the MIT license, which means that it can be freely used, modified, and distributed, both for commercial and non-commercial purposes. Contributions and feedback are welcome and encouraged.
 
+![](https://i.imgur.com/iCphBRJ.png)
+![](https://i.imgur.com/cTYYaWG.png)
+
 # Setting up project
 You want to add the path to the NetBridge folder to your include directories. (Configuration Properties -> VC++ Directories)
 And add path to the Release folder where the NetBridge.lib is located to your library directories. (Configuration Properties -> VC++ Directories)
@@ -116,6 +119,7 @@ int main( )
     return -1;
 }
 ```
+
 
 
 
