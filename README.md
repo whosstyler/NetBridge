@@ -55,22 +55,21 @@ int main( )
     int wsResult = WSAStartup( ver, &data );
 
     // Create a new instance of the server
-    spdlog::info( "Starting Server [{}]", SERVER_PORT );
-    auto main_server = new net_server( SERVER_PORT );
-    
+    Log( "Starting Server [{}]", SERVER_PORT );
+    std::unique_ptr<net::net_server> main_server = std::make_unique<net::net_server>( SERVER_PORT );
+
     // Check if the server started successfully
-    if ( main_server->begin_listening( ) ) {
-        spdlog::info( "Started server." );
-    }
-    else spdlog::error( "Failed to start server." );
-   
+    if ( main_server->begin_listening( ) )
+        Log( "Started server." );
+    else 
+        Log( "Failed to start server." );
+
     // Run an infinite loop to keep the program running
     while ( 1 ) {
         std::cin.get( );
         // Sleep for 1 millisecond to prevent the program from using too much CPU
         Sleep( 1 );
-    }
-}
+    
 ```
 When using this libary only file needed to include is net_server.h this includes all other files needed for this project to build and operate without error.(For both client & server)
 When calling begin_listening you can pass in a bool that'll start threads for client handling, packet handling, and send handling.
@@ -98,21 +97,22 @@ Usage is done like so
 ```cpp
 int main( )
 {
-   // Set the title of the console window
-   SetConsoleTitleA( "NetBridge Synchronous TCP CLIENT TEST" );
+    // Set the title of the console window
+    SetConsoleTitleA( "NetBridge Synchronous TCP CLIENT TEST" );
+
+    // Initialize the Winsock library
+    WSAData data;
+    WORD ver = MAKEWORD( 2, 2 );
+    int wsResult = WSAStartup( ver, &data );
+    // Create a new instance of the client and start listening for incoming data
+    std::unique_ptr<net::client> game_client = std::make_unique<net::client>( "127.0.0.1", SERVER_PORT );
    
-   // Initialize the Winsock library
-   WSAData data;
-   WORD ver = MAKEWORD( 2, 2 );
-   int wsResult = WSAStartup( ver, &data );
-   // Create a new instance of the client and start listening for incoming data
-   auto game_client = new client( "127.0.0.1", SERVER_PORT );
-   game_client->start_listeners( );
-  
-  // Attempt to connect to the server
-  if ( game_client->connect( ) )
-       printf( "Connected to server \n" );
-    
+    game_client->start_listeners( );
+
+    // Attempt to connect to the server
+    if ( game_client->connect( ) )
+        Log( "Connected to server" );
+   
     // Wait for users input  
     system( "pause" );
     
