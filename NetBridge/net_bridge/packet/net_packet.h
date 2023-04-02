@@ -38,7 +38,7 @@ namespace net_bridge
     class c_header {
     public:
         uint16_t magic_id = 77;
-        uint64_t body_length;
+        uint64_t body_length = 0;
     };
 
     class c_body {
@@ -75,13 +75,13 @@ namespace net_bridge
         inline c_packet_container( ) {}
         
         void on_data_received( std::uint64_t sock, c_array arr );
-        std::map<std::uint64_t, std::deque<c_packet>*> get_packets( ) { return received_packets; }
+        std::map<std::uint64_t, std::queue<c_packet>*> get_packets( ) { return received_packets; }
 
         void new_client( uint64_t c ) {
-            received_packets[ c ] = new std::deque<c_packet>( );
+            received_packets[ c ] = new std::queue<c_packet>( );
         }
     private:
-        std::map<std::uint64_t, std::deque<c_packet>*> received_packets;
+        std::map<std::uint64_t, std::queue<c_packet>*> received_packets;
         std::map<std::uint64_t, c_array> received_data;
     };
 };

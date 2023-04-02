@@ -49,19 +49,19 @@ namespace net_bridge
 
         void on_connected( c_socket sock ) {
             auto sock_id = sock.get_socket( );      
-            Log( "%s | New client connected! [%d] adding to container.", __FUNCTION__, sock_id );         
+            Log( "%s | New client connected! [%llx] adding to container.", __FUNCTION__, sock_id );         
             clients[ sock_id ] = sock;
         }
 
         void on_disconnected( c_socket sock ) {
             auto sock_id = sock.get_socket( );          
-            Log( "%s | Client disconnected [%d] removing from container.", __FUNCTION__, sock_id );         
+            Log( "%s | Client disconnected [%llx] removing from container.", __FUNCTION__, sock_id );         
             if ( clients.find( sock_id ) != clients.end( ) )
                 clients.erase( sock_id );
         }
         void on_disconnected( std::uint64_t sock_id ) {
-            Log( "%s | Client disconnected [%d] removing from container.", __FUNCTION__, sock_id );
-           
+            Log( "%s | Client disconnected [%llx] removing from container.", __FUNCTION__, sock_id );
+
             if ( clients.find( sock_id ) != clients.end( ) ) {
                 auto m_sock = clients[ sock_id ];
                 m_sock.close_socket( );
@@ -71,7 +71,7 @@ namespace net_bridge
 
         c_socket get_client( std::uint64_t m_socket ) {
             if ( clients.find( m_socket ) == clients.end( ) ) {
-                Log( "%s | Failed to remove client from container [%d]. (Client doesnt exist.)", __FUNCTION__, m_socket );
+                Log( "%s | Failed to remove client from container [%llx]. (Client doesnt exist.)", __FUNCTION__, m_socket );
                 return c_socket( 0 );
             }
             return clients[ m_socket ];

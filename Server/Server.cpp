@@ -15,9 +15,9 @@ namespace net {
     private:
         virtual void on_client_disconnected( std::uint64_t client_socket ) override;
     };
+
     void net_server::on_handle_packet( net_bridge::c_socket& client_socket, net_bridge::c_packet& message )
     {
-
     }
     bool net_server::on_client_connected( net_bridge::c_socket& client_socket )
     {

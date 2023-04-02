@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include <iostream>
 #include <vector>
 #include <string>
@@ -9,7 +10,9 @@
 #include <functional>
 #include <utility>
 #include <map>
-#include <spdlog/spdlog.h>
+#include <memory>
+#include <chrono>
+#include <functional>
 
 #include <WS2tcpip.h>
 #pragma comment(lib, "ws2_32")
@@ -19,5 +22,15 @@
 #else:
 #define Log( format, ... ) void(0);
 #endif 
+
+#ifndef NOMINMAX
+#ifndef max
+#define max(a,b) ((a)>(b)?(a):(b))
+#endif
+#ifndef min
+#define min(a,b) ((a)<(b)?(a):(b))
+#endif
+#endif
+
 
 

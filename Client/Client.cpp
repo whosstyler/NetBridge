@@ -17,7 +17,6 @@ namespace net {
     void client::on_handle_packet( net_bridge::c_socket& client_socket, net_bridge::c_packet& message )
     {
     }
-
     void client::on_disconnect( )
     {
     }

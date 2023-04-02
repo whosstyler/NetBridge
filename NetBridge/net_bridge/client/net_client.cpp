@@ -21,31 +21,41 @@ void net_bridge::c_client::packet_handler( )
 {
     while ( !client_socket || !client_socket->get_socket( ) )
         std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
-    
-    auto base_sock = client_socket->get_socket( );
 
-    container.new_client( client_socket->get_socket( ) );
+    // Add the client to the container
+    auto base_sock = client_socket->get_socket( );
+    container.new_client( base_sock );
+
+    // Wait for a short time before processing packets
     std::this_thread::sleep_for( std::chrono::milliseconds( 2500 ) );
 
+    // Continuously process incoming packets until the program is stopped
     while ( is_running ) {
         auto packets = container.get_packets( );
-        if ( !packets[ base_sock ] )
-            packets[ base_sock ] = new std::deque<net_bridge::c_packet>( );
 
-        while ( !packets[ base_sock ]->empty( ) ) {
-            net_bridge::c_packet& packet = packets[ base_sock ]->front( );
+        // If the queue for the base socket does not exist, create a new one
+        if ( !packets.count( base_sock ) )
+            packets[ base_sock ] = new std::queue<net_bridge::c_packet>( );
 
-            if ( packet.info.state != e_packet_state::completed ) 
-                break;
+        // Process all completed packets in the queue for the base socket
+        while ( !packets[ base_sock ]->empty( ) && packets[ base_sock ]->front( ).info.state == e_packet_state::completed ) {
+            auto& packet = packets[ base_sock ]->front( );
 
+            // If the packet has not been handled yet, handle it and remove it from the queue
             if ( !packet.info.is_handled ) {
                 packet.info.is_handled = true;
-                Log( "Handling Packet [%d]", packets[ base_sock ]->size( ) );
+                Log( "Handling Packet [%zu]", packets[ base_sock ]->size( ) );
                 on_handle_packet( *client_socket, packet );
-                packets[ base_sock ]->pop_front( );
+                packets[ base_sock ]->pop( );
             }
-            std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+            else {
+                // If the packet has already been handled, remove it from the queue without handling it again
+                packets[ base_sock ]->pop( );
+            }
         }
+
+        // Sleep for a short time before checking for new packets again
+        std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
     }
 }
 
